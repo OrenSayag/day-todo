@@ -7,7 +7,7 @@ interface TodoListProps {
   onUpdate: () => void;
 }
 
-const STATUS_ORDER: TodoStatus[] = ["pending", "not-done", "done"];
+const STATUS_ORDER: TodoStatus[] = ["pending", "done", "not-done"];
 
 export default function TodoList({ todos, onUpdate }: TodoListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
