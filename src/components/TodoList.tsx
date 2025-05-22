@@ -7,22 +7,43 @@ interface TodoListProps {
   onUpdate: () => void;
 }
 
-const STATUS_ORDER: TodoStatus[] = ["pending", "done", "not-done"];
+const STATUS_ORDER: TodoStatus[] = [
+  "pending",
+  "in-progress",
+  "done",
+  "not-done",
+];
 
 export default function TodoList({ todos, onUpdate }: TodoListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTask, setEditTask] = useState("");
+  const [editNotes, setEditNotes] = useState("");
+  const [editTimeEstimate, setEditTimeEstimate] = useState("");
+  const [editJira, setEditJira] = useState("");
 
   const handleEdit = (todo: Todo) => {
     setEditingId(todo.id);
     setEditTask(todo.task);
+    setEditNotes(todo.notes || "");
+    setEditTimeEstimate(todo.timeEstimate || "");
+    setEditJira(todo.jira || "");
   };
 
   const handleSave = (todo: Todo) => {
     if (editTask.trim()) {
-      updateTodo(todo.id, { ...todo, task: editTask.trim() });
+      updateTodo(todo.id, {
+        ...todo,
+        task: editTask.trim(),
+        notes: editNotes.trim(),
+        timeEstimate: editTimeEstimate.trim(),
+        jira: editJira.trim(),
+      });
       onUpdate();
     }
+    setEditingId(null);
+  };
+
+  const handleCancel = () => {
     setEditingId(null);
   };
 
@@ -47,6 +68,8 @@ export default function TodoList({ todos, onUpdate }: TodoListProps) {
     switch (status) {
       case "pending":
         return "bg-yellow-100 text-yellow-800";
+      case "in-progress":
+        return "bg-blue-100 text-blue-800";
       case "not-done":
         return "bg-red-100 text-red-800";
       case "done":
@@ -62,15 +85,72 @@ export default function TodoList({ todos, onUpdate }: TodoListProps) {
           className="flex items-center justify-between p-3 bg-white rounded-lg shadow"
         >
           {editingId === todo.id ? (
-            <input
-              type="text"
-              value={editTask}
-              onChange={(e) => setEditTask(e.target.value)}
-              onBlur={() => handleSave(todo)}
-              onKeyDown={(e) => e.key === "Enter" && handleSave(todo)}
-              className="flex-1 p-1 border rounded"
-              autoFocus
-            />
+            <div className="flex-1 space-y-2">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Task
+                </label>
+                <input
+                  type="text"
+                  value={editTask}
+                  onChange={(e) => setEditTask(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSave(todo)}
+                  className="w-full p-1 border rounded"
+                  autoFocus
+                  placeholder="Task"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Jira issue
+                </label>
+                <input
+                  type="text"
+                  value={editJira}
+                  onChange={(e) => setEditJira(e.target.value)}
+                  className="w-full p-1 border rounded"
+                  placeholder="Jira issue (optional)"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Time estimate
+                </label>
+                <input
+                  type="text"
+                  value={editTimeEstimate}
+                  onChange={(e) => setEditTimeEstimate(e.target.value)}
+                  className="w-full p-1 border rounded"
+                  placeholder="Time estimate (optional)"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Notes
+                </label>
+                <input
+                  type="text"
+                  value={editNotes}
+                  onChange={(e) => setEditNotes(e.target.value)}
+                  className="w-full p-1 border rounded"
+                  placeholder="Notes (optional)"
+                />
+              </div>
+              <div className="flex space-x-2 pt-2">
+                <button
+                  onClick={() => handleSave(todo)}
+                  className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className="px-3 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
           ) : (
             <div className="flex-1">
               <div className="flex items-center space-x-2 mb-2">

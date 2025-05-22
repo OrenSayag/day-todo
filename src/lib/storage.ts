@@ -13,7 +13,11 @@ export const saveTodos = (todos: Todo[]) => {
 
 export const addTodo = (todo: Todo) => {
   const todos = getTodos();
-  todos.push({ ...todo, id: crypto.randomUUID(), status: "pending" });
+  todos.push({
+    ...todo,
+    id: crypto.randomUUID(),
+    status: todo.status || "pending",
+  });
   saveTodos(todos);
 };
 
